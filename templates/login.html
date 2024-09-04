@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    {{ toastr.include_jquery() }}
+    {{ toastr.include_toastr_css() }}
+    {{ toastr.message() }}
+</head>
+<body>
+    <div class="container login-container">
+        <h1 class="login-heading">Login</h1>
+        <!-- Блок для отображения флэш-сообщений -->
+        {{ toastr.include_toastr_js() }}
+        <!-- Форма входа -->
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            <div class="login-form">
+                <input type="text" name="username" class="login-input" placeholder="Username" required>
+                <input type="password" name="password" class="login-input" placeholder="Password" required>
+                <input type="submit" value="Login" class="login-submit">
+            </div>
+        </form>
+    </div>
+</body>
+</html>

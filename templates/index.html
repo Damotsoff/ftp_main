@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    {{ toastr.include_jquery() }}
+    {{ toastr.include_toastr_css() }}
+    {{ toastr.message() }}
+    <script>
+       function copyLinkToClipboard(link) {
+            var textArea = document.createElement("textarea");
+            textArea.value = link;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand("copy");
+            document.body.removeChild(textArea);
+            alert("Ссылка скопирована в буфер обмена: " + link);
+        }
+    </script>
+</head>
+<body>
+    {{ toastr.include_toastr_js() }}
+    <h1>Welcome, {{ current_user.id }}!</h1>
+    <a href="{{ url_for('logout') }}" class="logout-button">Logout</a>
+    <h1>Upload a File</h1>
+    <form method="POST" action="/upload" enctype="multipart/form-data">
+        <input type="file" name="file">
+        <input type="submit" value="Upload">
+    </form>
+    <h2>Uploaded Files</h2>
+    <h3>Free space</h3>
+    <h4>{{total}}   |   {{used}}    |   {{free}}</h4>
+    <ul>
+        {% for filename in filenames %}
+        <li>
+            
+            <a href="{{ url_for('uploaded_file', filename=filename) }}">{{ filename}}</a>
+            <a href="{{ url_for('delete_file', filename=filename) }}" class="delete-link">(Delete)</a>
+                <input type="text" id="fileLink" value="{{ url_for('uploaded_file', filename=filename) }}" style="display: none;">
+                <button onclick="copyLinkToClipboard('{{ url_for('uploaded_file', filename=filename) }}')">Копировать ссылку</button>
+        </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
