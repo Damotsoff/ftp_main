@@ -1,18 +1,16 @@
 from flask import Flask, request, render_template, send_from_directory, redirect, url_for, flash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from flask_wtf import FlaskForm
+from flask_cors import CORS
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired
-from flask_toastr import Toastr  # Импорт модуля для уведомлений
-
 import os
 import shutil
 
 # Создаем объект приложения Flask
 app = Flask(__name__)
 app.secret_key = 'surprisemotherfukaaaaaaaaa'  # Секретный ключ для безопасности сессий
-toastr = Toastr()
-toastr.init_app(app=app)
+CORS(app)
 
 # Конфигурируем Flask-Login
 login_manager = LoginManager()
@@ -24,8 +22,7 @@ UPLOAD_FOLDER = 'uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Заглушка для данных пользователей (замените на настоящую базу данных)
-users = { 'admin': {'password': 'abrakadabrahuyabra'}
-         }
+users = {'admin': {'password': 'abrakadabrahuyabra'}}
 
 # Класс пользователя для управления сеансами Flask-Login
 class User(UserMixin):
@@ -75,7 +72,7 @@ def login():
             login_user(user)  # Функция Flask-Login для входа пользователя
             return redirect(url_for('index'))
         else:
-            flash('Введите корректные данные', 'error')  # Уведомление об ошибке
+            flash('Неверные имя пользователя или пароль', 'danger')  # Уведомление об ошибке
 
     return render_template('login.html', form=form)
 
@@ -84,6 +81,7 @@ def login():
 @login_required
 def logout():
     logout_user()  # Функция Flask-Login для выхода пользователя
+    flash('Вы успешно вышли из системы', 'info')
     return redirect(url_for('login'))
 
 # Определение маршрута для загрузки файла, доступного только авторизованным пользователям
@@ -91,15 +89,16 @@ def logout():
 @login_required
 def upload_file():
     if 'file' not in request.files:
-        return "Не указана часть файла"
+        flash("Файл не найден", 'danger')
+        return redirect('/')
     file = request.files['file']
     if file.filename == '':
-        return "Файл не выбран"
+        flash("Файл не выбран", 'warning')
+        return redirect('/')
     if file:
         filename = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
-        path = os.path.join(request.base_url, file.filename)           
         file.save(filename)
-        flash('Файл успешно загружен', 'info')  # Уведомление о успешной загрузке файла
+        flash('Файл успешно загружен', 'success')
         return redirect('/')
 
 # Определение маршрута для доступа к загруженным файлам, доступного только авторизованным пользователям
@@ -117,11 +116,12 @@ def delete_file(filename):
         flash('Файл успешно удален', 'info')  # Уведомление о успешном удалении файла
         return redirect(url_for('index'))
     except Exception as e:
-        return str(e)
+        flash(f"Ошибка: {str(e)}", 'danger')
+        return redirect(url_for('index'))
 
 # Запуск приложения при выполнении этого сценария
-# if __name__ == '__main__':
-#     # Создание папки для загрузок, если ее нет
-#     os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-#     # Запуск приложения Flask в режиме отладки на порту 4444
-#     app.run(debug=True, port=4444)
+if __name__ == '__main__':
+    # Создание папки для загрузок, если ее нет
+    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+    # Запуск приложения Flask в режиме отладки на порту 4444
+    app.run(debug=True, port=4444)
