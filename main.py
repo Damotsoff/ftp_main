@@ -120,8 +120,8 @@ def delete_file(filename):
         return redirect(url_for('index'))
 
 # Запуск приложения при выполнении этого сценария
-if __name__ == '__main__':
-    # Создание папки для загрузок, если ее нет
-    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-    # Запуск приложения Flask в режиме отладки на порту 4444
-    app.run(debug=True, port=4444)
+# if __name__ == '__main__':
+#     # Создание папки для загрузок, если ее нет
+#     os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+#     # Запуск приложения Flask в режиме отладки на порту 4444
+#     app.run(debug=True, port=4444)
